@@ -135,7 +135,7 @@ import {
       alignItems: "center",
       borderRadius: 5,
       width:300,
-     marginLeft:500
+     marginLeft:"50%"
       // marginBottom: hp(2),
     },
     addButtonText: {
