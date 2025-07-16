@@ -5,39 +5,56 @@ import {widthPercentageToDP as wp,heightPercentageToDP as hp,} from "react-nativ
 
 export default function RecipesFormScreen({ route, navigation }) {
   const { recipeToEdit, recipeIndex, onrecipeEdited } = route.params || {};
-  const [title, setTitle] = useState(recipeToEdit ? recipeToEdit.title : "");
-  const [image, setImage] = useState(recipeToEdit ? recipeToEdit.image : "");
-  const [description, setDescription] = useState(
-    recipeToEdit ? recipeToEdit.description : ""
+  const [recipeName, setRecipeName] = useState(recipeToEdit ? recipeToEdit.recipeName : "");
+  const [recipeImage, setRecipeImage] = useState(recipeToEdit ? recipeToEdit.recipeImage : "");
+  const [cookingDescription, setCookingDescription] = useState(
+    recipeToEdit ? recipeToEdit.cookingDescription : ""
   );
 
   const saverecipe = async () => {
- 
+    const newrecipe = { recipeName, recipeImage, cookingDescription };
+    try {
+      const existingRecipes = await AsyncStorage.getItem("customrecipes");
+      const recipes = existingRecipes ? JSON.parse(existingRecipes) : [];
+
+      if (recipeToEdit !== undefined) {
+        recipes[recipeIndex] = newrecipe;
+        await AsyncStorage.setItem("customrecipes", JSON.stringify(recipes));
+        if (onrecipeEdited) onrecipeEdited();
+      } else {
+        recipes.push(newrecipe);
+        await AsyncStorage.setItem("customrecipes", JSON.stringify(recipes));
+      }
+
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error saving the recipe: ", error);
+    }
   };
 
   return (
     <View style={styles.container}>
       <TextInput
         placeholder="Title"
-        value={title}
-        onChangeText={setTitle}
+        value={recipeName}
+        onChangeText={setRecipeName}
         style={styles.input}
       />
       <TextInput
         placeholder="Image URL"
-        value={image}
-        onChangeText={setImage}
+        value={recipeImage}
+        onChangeText={setRecipeImage}
         style={styles.input}
       />
-      {image ? (
-        <Image source={{ uri: image }} style={styles.image} />
+      {recipeImage ? (
+        <Image source={{ uri: recipeImage }} style={styles.image} />
       ) : (
         <Text style={styles.imagePlaceholder}>Upload Image URL</Text>
       )}
       <TextInput
         placeholder="Description"
-        value={description}
-        onChangeText={setDescription}
+        value={cookingDescription}
+        onChangeText={setCookingDescription}
         multiline={true}
         numberOfLines={4}
         style={[styles.input, { height: hp(20), textAlignVertical: "top" }]}

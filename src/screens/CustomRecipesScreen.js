@@ -20,20 +20,23 @@ import {
     const dispatch = useDispatch();
   
     const route = useRoute();
+    console.log(route.params);
     const { recipe } = route.params || {}; // Pass the  object as a parameter
     console.log('recipe',recipe);
     
-    const favoriteRecipe = useSelector(
+    const favoriterecipes = useSelector(
       (state) => state.favorites.favoriterecipes
     );
-    console.log('favoriteRecipe from custom',favoriteRecipe);
+    console.log('favoriteRecipe from custom',favoriterecipes);
     
-    const isFavourite = favoriteRecipe.includes(recipe.idCategory); // Adjust this according to your recipe structure
+    const isFavourite = favoriterecipes?.some(
+    (favrecipe) => favrecipe.idFood === recipe.idFood
+  ); 
   
     if (!recipe) {
       return (
         <View style={styles.container}>
-          <Text style={styles.title}>No Recipe Details Available</Text>
+          <Text style={styles.sectionTitle}>No Recipe Details Available</Text>
         </View>
       );
     }
@@ -48,10 +51,10 @@ import {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent} testID="scrollContent"
       >
-        {/* Recipe Image */}
+        
         <View style={styles.imageContainer} testID="imageContainer">
-        {recipe.image && (
-            <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
+        {recipe.recipeImage && (
+            <Image source={{ uri: recipe.recipeImage }} style={styles.recipeImage} />
           )}
         </View>
         <View
@@ -71,13 +74,13 @@ import {
           </TouchableOpacity>
         </View>
   
-        {/* Recipe Details */}
+        
         <View style={styles.contentContainer} testID="contentContainer">
-        <Text style={styles.recipeTitle}>{recipe.title}</Text>
-  <View style={styles.sectionContainer}>
-    <Text style={styles.sectionTitle}>Content</Text>
-    <Text style={styles.contentText}>{recipe.description}</Text>
-  </View>
+        <Text style={styles.recipeTitle}>{recipe.recipeName}</Text>
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Content</Text>
+          <Text style={styles.contentText}>{recipe.cookingDescription}</Text>
+        </View>
         </View>
       </ScrollView>
     );
